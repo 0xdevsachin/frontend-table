@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Loading from './components/loading';
 import './App.css';
 
 type ITableType = {
@@ -10,6 +11,7 @@ type ITableType = {
 const Table = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [tableData, setTableData] = useState<ITableType[]>([])
+  const [loading, setLoading] = useState(false)
   const itemsPerPage = 5;
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -19,11 +21,14 @@ const Table = () => {
 
   const fetchTableData = async () => {
     try {
+      setLoading(true)
       const res = await fetch("https://raw.githubusercontent.com/saaslabsco/frontend-assignment/refs/heads/master/frontend-assignment.json")
       const response = await res.json();
       setTableData(response)
     } catch (error) {
       console.log(">>> error", error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -62,6 +67,8 @@ const Table = () => {
   useEffect(() => {
     fetchTableData()
   }, [])
+
+  if (loading) return <Loading />
 
   return (
     <div className="table-container">
